@@ -14,11 +14,12 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
-public abstract class BaseEntity implements Serializable {
+public abstract class BaseEntity<ID extends Serializable> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "id")
+    private ID id;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)

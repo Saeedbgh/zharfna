@@ -1,20 +1,19 @@
 package com.zharfna.zharfna.entity;
 
 import com.zharfna.zharfna.entity.base.BaseEntity;
-import com.zharfna.zharfna.entity.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
 @Table(name = "users")
-@Getter
-@Setter
+@Inheritance(strategy = InheritanceType.JOINED)
+@Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class User extends BaseEntity {
-    @Column(nullable = false, unique = true, length = 15)
-    private String mobile;
+public abstract class User extends BaseEntity<Long> {
+
+    @Column(unique = true, nullable = false)
+    private String cellPhoneNumber;
 
     @Column(unique = true)
     private String email;
@@ -22,13 +21,5 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private Role role;
-
-    @Column(nullable = false)
-    private boolean enabled;
-
-    @Column(nullable = false)
-    private boolean accountNonLocked;
+    private boolean enabled = true;
 }
