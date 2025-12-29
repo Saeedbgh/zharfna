@@ -10,7 +10,10 @@ import lombok.Setter;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "contracts")
+@Table(name = "contracts", indexes = {
+        @Index(name = "idx_owner_active", columnList = "owner_id, active"),
+        @Index(name = "idx_start_end_date", columnList = "start_date, end_date")
+})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,11 +21,14 @@ import java.time.LocalDate;
 public class Contract extends BaseEntity<Long> {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "artist_name", nullable = false)
-    private User artistName;
+    @JoinColumn(name = "owner_id", nullable = false)
+    private Owner owner;
 
     @Column(name = "artist_share_percent", nullable = false)
     private Integer artistSharePercent;
+
+    @Column(name = "owner_share_percent", nullable = false)
+    private Integer ownerSharePercent;
 
     @Column(name = "company_share_percent", nullable = false)
     private Integer companySharePercent;
@@ -34,6 +40,19 @@ public class Contract extends BaseEntity<Long> {
     private LocalDate endDate;
 
     @Column(nullable = false)
-    private boolean active;
+    private boolean active = true;
 
+    @Column(columnDefinition = "TEXT")
+    private String terms;
+
+    @PrePersist
+    @PreUpdate
+    private void validateShares() {
+        int total = artistSharePercent + ownerSharePercent + companySharePercent;
+        if (total != 100) {
+            throw new IllegalStateException(
+                    "Sum of all shares must equal 100, current sum: " + total
+            );
+        }
+    }
 }

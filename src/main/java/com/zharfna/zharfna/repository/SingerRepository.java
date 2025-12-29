@@ -1,14 +1,14 @@
 package com.zharfna.zharfna.repository;
 
-import com.zharfna.zharfna.entity.Singer;
+import com.zharfna.zharfna.entity.Artist;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface SingerRepository extends JpaRepository<Singer, Long> {
+public interface SingerRepository extends JpaRepository<Artist, Long> {
 
-    Optional<Singer> findByStageName(String stageName);
+    Optional<Artist> findByStageName(String stageName);
 
-    List<Singer> findAllByEnabledTrue();
+    List<Artist> findAllByEnabledTrue();
 }

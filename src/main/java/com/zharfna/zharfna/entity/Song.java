@@ -11,7 +11,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "songs")
+@Table(name = "songs", indexes = {
+        @Index(name = "idx_song_code", columnList = "song_code")
+})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -20,17 +22,15 @@ public class Song extends BaseEntity<Long> {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "song_singers",
+            name = "song_artists",
             joinColumns = @JoinColumn(name = "song_id"),
-            inverseJoinColumns = @JoinColumn(name = "singer_id")
+            inverseJoinColumns = @JoinColumn(name = "artist_id")
     )
-    private Set<Singer> singers = new HashSet<>();
+    private Set<Artist> artists = new HashSet<>();
 
-    @Column(name = "song_name", nullable = false)
+    @Column(name = "song_name", nullable = false, length = 200)
     private String songName;
 
     @Column(name = "song_code", nullable = false, unique = true)
     private Long songCode;
-
-
 }
