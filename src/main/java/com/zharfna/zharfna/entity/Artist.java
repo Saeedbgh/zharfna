@@ -7,10 +7,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "artists", indexes = {
-        @Index(name = "idx_stage_name", columnList = "stage_name"),
-        @Index(name = "idx_owner", columnList = "owner_id")
-})
+@Table(
+        name = "artists",
+        indexes = {
+                @Index(name = "idx_stage_name", columnList = "stage_name"),
+                @Index(name = "idx_owner_id", columnList = "owner_id")
+        }
+)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -21,10 +24,10 @@ public class Artist extends User {
     @JoinColumn(name = "owner_id", nullable = false)
     private Owner owner;
 
-    @Column(name = "stage_name", unique = true, length = 100)
+    @Column(name = "stage_name", nullable = false, unique = true, length = 100)
     private String stageName;
 
-    @Column(columnDefinition = "TEXT")
+    @Lob
     private String biography;
 
     @Column(name = "profile_picture_url", length = 500)
