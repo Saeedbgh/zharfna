@@ -15,7 +15,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Admin extends User {
-
     @Column(name = "employee_id", nullable = false, unique = true, length = 50)
     private String employeeId;
 }

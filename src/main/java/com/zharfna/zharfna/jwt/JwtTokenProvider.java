@@ -3,45 +3,73 @@ package com.zharfna.zharfna.jwt;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.List;
 
+@Slf4j
 @Component
 public class JwtTokenProvider {
 
-    private static final String SECRET = "very-very-secret-key-for-jwt-signing-256-bit!!";
+    @Value("${jwt.secret}")
+    private String secretString;
 
-    private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 24;
+    @Value("${jwt.expiration:86400000}")
+    private long expirationTime;
 
-    private final SecretKey key = Keys.hmacShaKeyFor(SECRET.getBytes());
+    private SecretKey getKey() {
+        return Keys.hmacShaKeyFor(secretString.getBytes());
+    }
 
+    public String generateToken(String mobile, List<String> roles) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + expirationTime);
 
-    public String generateToken(String username, List<String> roles) {
+        log.debug("Generating token for mobile: {} with roles: {}", mobile, roles);
+
         return Jwts.builder()
-                .setSubject(username) //Payload
-                .claim("roles", roles) //Payload
-                .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis()))
-                .signWith(key, SignatureAlgorithm.HS256)
+                .setSubject(mobile)
+                .claim("roles", roles)
+                .setIssuedAt(now)
+                .setExpiration(expiryDate)
+                .signWith(getKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    public String getUsername(String token) {
-        String username =
+    public String getMobile(String token) {
+        return getClaims(token)
+                .getBody()
+                .getSubject();
     }
 
-
-
-    public boolean validateToken(String token){
-
+    @SuppressWarnings("unchecked")
+    public List<String> getRoles(String token) {
+        return (List<String>) getClaims(token)
+                .getBody()
+                .get("roles");
     }
 
-    private Jws<Claims> getClaims(String token){
+    public boolean validateToken(String token) {
+        try {
+            getClaims(token);
+            return true;
+        } catch (JwtException | IllegalArgumentException ex) {
+            log.error("Invalid JWT token: {}", ex.getMessage());
+            return false;
+        }
+    }
 
+    private Jws<Claims> getClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getKey())
+                .build()
+                .parseClaimsJws(token);
     }
 }

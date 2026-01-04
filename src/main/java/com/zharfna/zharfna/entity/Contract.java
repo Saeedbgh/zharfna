@@ -30,9 +30,6 @@ public class Contract extends BaseEntity<Long> {
     @Column(name = "owner_share_percent", nullable = false)
     private Integer ownerSharePercent;
 
-    @Column(name = "company_share_percent", nullable = false)
-    private Integer companySharePercent;
-
     @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
 
@@ -48,7 +45,7 @@ public class Contract extends BaseEntity<Long> {
     @PrePersist
     @PreUpdate
     private void validateShares() {
-        int total = artistSharePercent + ownerSharePercent + companySharePercent;
+        int total = artistSharePercent + ownerSharePercent;
         if (total != 100) {
             throw new IllegalStateException(
                     "Sum of all shares must equal 100, current sum: " + total
