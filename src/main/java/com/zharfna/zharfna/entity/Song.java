@@ -1,6 +1,7 @@
 package com.zharfna.zharfna.entity;
 
 import com.zharfna.zharfna.entity.base.BaseEntity;
+import com.zharfna.zharfna.entity.user.Artist;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

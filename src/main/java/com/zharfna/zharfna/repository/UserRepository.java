@@ -1,6 +1,6 @@
 package com.zharfna.zharfna.repository;
 
-import com.zharfna.zharfna.entity.User;
+import com.zharfna.zharfna.entity.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

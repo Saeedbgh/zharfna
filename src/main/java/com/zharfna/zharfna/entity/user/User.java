@@ -1,4 +1,4 @@
-package com.zharfna.zharfna.entity;
+package com.zharfna.zharfna.entity.user;
 
 import com.zharfna.zharfna.entity.base.BaseEntity;
 import com.zharfna.zharfna.enums.Role;
@@ -7,6 +7,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(
@@ -21,7 +25,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class User extends BaseEntity<Long> {
+public abstract class User extends BaseEntity<Long> implements UserDetails {
 
     @Column(nullable = false, length = 50)
     private String firstName;
@@ -40,7 +44,14 @@ public abstract class User extends BaseEntity<Long> {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private Role role;
+    private Set<Role> roles = new HashSet<>();
+
+/*    public Collection<? extends GrandAuthority> grandAuthorities() {
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_") + role.name()))
+        .collct(Collectors.toSet());
+}*/
+
 
     @Column(nullable = false)
     private boolean enabled = true;

@@ -1,4 +1,4 @@
-package com.zharfna.zharfna.entity;
+package com.zharfna.zharfna.entity.user;
 
 import jakarta.persistence.*;
 import lombok.*;

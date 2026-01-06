@@ -1,5 +1,6 @@
-package com.zharfna.zharfna.entity;
+package com.zharfna.zharfna.entity.user;
 
+import com.zharfna.zharfna.entity.Owner;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
