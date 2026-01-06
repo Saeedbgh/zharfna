@@ -1,27 +1,67 @@
 package com.zharfna.zharfna.service;
 
 import com.zharfna.zharfna.dto.request.RegisterRequestDTO;
+import com.zharfna.zharfna.dto.response.RegisterResponseDTO;
 import com.zharfna.zharfna.entity.user.User;
-import com.zharfna.zharfna.enums.Role;
+import com.zharfna.zharfna.mapper.UserMapper;
 import com.zharfna.zharfna.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
+import com.zharfna.zharfna.service.base.crud.CrudServiceImpl;
+import jakarta.validation.Validator;
+import org.jspecify.annotations.NonNull;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
-
 @Service
-@RequiredArgsConstructor
-public class UserServiceImpl implements UserDetailsService {
-    private final UserRepository userRepository;
+public class UserServiceImpl
+        extends CrudServiceImpl<User, Long, UserRepository>
+        implements UserDetailsService {
 
-    public User register(RegisterRequestDTO registerRequestDTO){
-        User user = User.builder()
-                .username(registerRequestDTO.username())
-                .password(registerRequestDTO.password())
-                .roles(Set.of(Role.USER))
-                .build();
-        return userRepository.save(user);
+    private final PasswordEncoder passwordEncoder;
+
+    public UserServiceImpl(
+            UserRepository repository,
+            Validator validator,
+            PasswordEncoder passwordEncoder
+    ) {
+        super(repository, validator);
+        this.passwordEncoder = passwordEncoder;
     }
 
+    public RegisterResponseDTO register(RegisterRequestDTO registerRequestDTO) {
+
+        if (repository.existsByMobileNumber(registerRequestDTO.getMobile())) {
+            throw new IllegalStateException("This phone number has already registered");
+        }
+
+        User user = UserMapper.toEntity(registerRequestDTO);
+
+        user.setPassword(
+                passwordEncoder.encode(registerRequestDTO.getPassword())
+        );
+
+
+        User savedUser = repository.save(user);
+
+
+        return new RegisterResponseDTO(
+                savedUser.getId(),
+                savedUser.getMobileNumber(),
+                "User registered successfully"
+        );
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(@NonNull String username)
+            throws UsernameNotFoundException {
+
+        return (UserDetails) repository.findByMobile(username)
+                .orElseThrow(() ->
+                        new UsernameNotFoundException(
+                                "User not found with mobile: " + username
+                        )
+                );
+    }
 }

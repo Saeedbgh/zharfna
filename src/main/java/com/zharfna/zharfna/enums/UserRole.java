@@ -1,6 +1,6 @@
 package com.zharfna.zharfna.enums;
 
-public enum Role {
+public enum UserRole {
     ADMIN,
     ARTIST
 }

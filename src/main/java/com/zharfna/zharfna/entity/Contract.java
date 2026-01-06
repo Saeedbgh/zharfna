@@ -1,5 +1,4 @@
-package com.zharfna.zharfna.entity;
-
+import com.zharfna.zharfna.entity.Owner;
 import com.zharfna.zharfna.entity.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -12,7 +11,7 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "contracts", indexes = {
         @Index(name = "idx_owner_active", columnList = "owner_id, active"),
-        @Index(name = "idx_start_end_date", columnList = "start_date, end_date")
+        @Index(name = "idx_active_start_end", columnList = "active, start_date, end_date")
 })
 @Getter
 @Setter
@@ -25,10 +24,10 @@ public class Contract extends BaseEntity<Long> {
     private Owner owner;
 
     @Column(name = "artist_share_percent", nullable = false)
-    private Integer artistSharePercent;
+    private int artistSharePercent;
 
     @Column(name = "owner_share_percent", nullable = false)
-    private Integer ownerSharePercent;
+    private int ownerSharePercent;
 
     @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
@@ -39,17 +38,24 @@ public class Contract extends BaseEntity<Long> {
     @Column(nullable = false)
     private boolean active = true;
 
-    @Column(columnDefinition = "TEXT")
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
     private String terms;
 
     @PrePersist
     @PreUpdate
     private void validateShares() {
-        int total = artistSharePercent + ownerSharePercent;
-        if (total != 100) {
+        if (artistSharePercent + ownerSharePercent != 100) {
             throw new IllegalStateException(
-                    "Sum of all shares must equal 100, current sum: " + total
+                    "Sum of all shares must equal 100"
             );
         }
+    }
+
+    public boolean isActiveNow() {
+        LocalDate today = LocalDate.now();
+        return active &&
+                !startDate.isAfter(today) &&
+                (endDate == null || !endDate.isBefore(today));
     }
 }

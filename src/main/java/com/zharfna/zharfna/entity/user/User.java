@@ -1,16 +1,20 @@
 package com.zharfna.zharfna.entity.user;
 
 import com.zharfna.zharfna.entity.base.BaseEntity;
-import com.zharfna.zharfna.enums.Role;
+import com.zharfna.zharfna.enums.UserType;
+import com.zharfna.zharfna.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(
@@ -25,7 +29,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class User extends BaseEntity<Long> implements UserDetails {
+public class User extends BaseEntity<Long> {
 
     @Column(nullable = false, length = 50)
     private String firstName;
@@ -34,7 +38,7 @@ public abstract class User extends BaseEntity<Long> implements UserDetails {
     private String lastName;
 
     @Column(nullable = false, unique = true, length = 15)
-    private String mobile;
+    private String mobileNumber;
 
     @Column(unique = true, length = 320)
     private String email;
@@ -44,13 +48,20 @@ public abstract class User extends BaseEntity<Long> implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private Set<Role> roles = new HashSet<>();
+    private Set<UserRole> userRoles = new HashSet<>();
 
-/*    public Collection<? extends GrandAuthority> grandAuthorities() {
-        return roles.stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_") + role.name()))
-        .collct(Collectors.toSet());
-}*/
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private Set<UserType> userTypes = new HashSet<>();
+
+    @Override
+    public Collection<? extends GrantedAuthority> grandAuthorities() {
+        // ROLE_ADMIN
+        return userRoles.stream()
+                .map(userRole -> new SimpleGrantedAuthority("ROLE_" + userRole.name()))
+                .collect(Collectors.toSet());
+
+    }
 
 
     @Column(nullable = false)

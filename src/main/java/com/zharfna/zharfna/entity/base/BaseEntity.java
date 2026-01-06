@@ -6,9 +6,11 @@ import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Collection;
 
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
@@ -32,4 +34,5 @@ public abstract class BaseEntity<ID extends Serializable> {
     @Version
     private Long version;
 
+    public abstract Collection<? extends GrantedAuthority> grandAuthorities();
 }
