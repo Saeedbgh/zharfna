@@ -1,26 +1,26 @@
 package com.zharfna.zharfna.entity.user;
 
 import com.zharfna.zharfna.entity.base.BaseEntity;
-import com.zharfna.zharfna.enums.UserType;
 import com.zharfna.zharfna.enums.UserRole;
+import com.zharfna.zharfna.enums.UserType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(
         name = "users",
         indexes = {
-                @Index(name = "idx_users_mobile", columnList = "mobile"),
+                @Index(name = "idx_users_mobileNumber", columnList = "mobile_number"),
                 @Index(name = "idx_users_email", columnList = "email")
         }
 )
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class User extends BaseEntity<Long> {
+public class User extends BaseEntity<Long> implements UserDetails {
 
     @Column(nullable = false, length = 50)
     private String firstName;
@@ -54,16 +54,17 @@ public class User extends BaseEntity<Long> {
     @Column(nullable = false, length = 20)
     private Set<UserType> userTypes = new HashSet<>();
 
-    @Override
-    public Collection<? extends GrantedAuthority> grandAuthorities() {
-        // ROLE_ADMIN
-        return userRoles.stream()
-                .map(userRole -> new SimpleGrantedAuthority("ROLE_" + userRole.name()))
-                .collect(Collectors.toSet());
-
-    }
-
 
     @Column(nullable = false)
     private boolean enabled = true;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of();
+    }
+
+    @Override
+    public String getUsername() {
+        return "";
+    }
 }

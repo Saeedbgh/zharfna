@@ -34,5 +34,5 @@ public abstract class BaseEntity<ID extends Serializable> {
     @Version
     private Long version;
 
-    public abstract Collection<? extends GrantedAuthority> grandAuthorities();
+
 }

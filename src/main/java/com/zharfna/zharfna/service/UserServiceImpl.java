@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserServiceImpl
         extends CrudServiceImpl<User, Long, UserRepository>
-        implements UserDetailsService {
+         {
 
     private final PasswordEncoder passwordEncoder;
 
@@ -53,11 +53,11 @@ public class UserServiceImpl
         );
     }
 
-    @Override
+
     public UserDetails loadUserByUsername(@NonNull String username)
             throws UsernameNotFoundException {
 
-        return (UserDetails) repository.findByMobile(username)
+        return (UserDetails) repository.findByMobileNumber(username)
                 .orElseThrow(() ->
                         new UsernameNotFoundException(
                                 "User not found with mobile: " + username

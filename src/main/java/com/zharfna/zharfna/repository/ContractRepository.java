@@ -1,5 +1,6 @@
 package com.zharfna.zharfna.repository;
 
+
 import com.zharfna.zharfna.entity.Contract;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
